@@ -1,0 +1,36 @@
+{
+  "name": "htmlpatch",
+  "author": "Séamus O'Connor",
+  "license": "MIT",
+  "homepage": "https://github.com/seamus-oconnor/htmlpatch",
+  "version": "0.0.1",
+  "description": "Fast application of HTML DOM patch format to an element",
+  "main": "build/htmlpatch.js",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-bump": "^0.3.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-connect": "^0.9.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-jshint": "^0.11.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-mkdir": "^0.1.2",
+    "grunt-mocha": "^0.4.12"
+  },
+  "private": true,
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seamus-oconnor/htmlpatch"
+  },
+  "keywords": [
+    "html",
+    "dom",
+    "patch"
+  ],
+  "bugs": {
+    "url": "https://github.com/seamus-oconnor/htmlpatch/issues"
+  }
+}

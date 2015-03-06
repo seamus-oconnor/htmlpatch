@@ -1,0 +1,29 @@
+{
+  "name": "htmlpatch",
+  "author": "Séamus O'Connor",
+  "license": "MIT",
+  "homepage": "https://github.com/seamus-oconnor/htmlpatch",
+  "version": "0.0.1",
+  "description": "Fast application of HTML DOM patch format to an element",
+  "main": "dist/htmlpatch.js",
+  "keywords": [
+    "html",
+    "dom",
+    "patch"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "Dockerfile",
+    "Gruntfile.js",
+    "scripts",
+    "tests"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "expect": "~0.3.1",
+    "mocha": "~2.1.0"
+  }
+}

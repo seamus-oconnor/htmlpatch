@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="UTF-8" />
+
+  <link rel="stylesheet" type="text/css" href="../bower_components/mocha/mocha.css">
+
+  <script src="../dist/htmlpatch.js"></script>
+</head>
+<body>
+
+<h1>Html Patch Tests</h1>
+
+<div id="mocha"></div>
+
+<script src="../bower_components/mocha/mocha.js"></script>
+<script src="../bower_components/expect/index.js"></script>
+<script>mocha.setup('bdd');</script>
+
+
+<script src="helpers.js"></script>
+
+<script src="specs/load.js"></script>
+<script src="specs/text.js"></script>
+<script src="specs/attributes.js"></script>
+<script src="specs/elements.js"></script>
+
+<script>
+window.onload = function() {
+  mocha.run();
+};
+</script>
+
+</body>
+</html>
