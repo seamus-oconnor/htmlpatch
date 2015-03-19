@@ -8,25 +8,37 @@
   // Patch attributes, nodes (perserving existing node order), comments, and
   // text nodes.
 
+  function repeatStr(s, times) {
+    return new Array(times).join(s);
+  }
+
+  function diffErrorMessage(msg, diff, pos) {
+    var snip = diff.substring(pos - 20, 40);
+    return 'HTMLPatch parse error:\n' + snip + '\n' + repeatStr(Math.min(pos, 20)) + '^ ' + msg + ' at char: ' + pos;
+  }
 
   function htmlPatch(rootNode, diff) {
-    var node = rootNode;
     // <?div id="test-1" +data-updated>Goodbye World!</div>
-    if(node.nodeType !== 1) { throw new TypeError('First argument must be a HTML element.'); }
+    if(rootNode.nodeType !== 1) { throw new TypeError('First argument must be a HTML element.'); }
     if(typeof diff !== 'string') { throw new TypeError('Second argument must be a string.'); }
 
+    var node = rootNode;
     var parentNode = node.parentNode;
+    var pos = 0;
+    var diffLen = diff.length;
 
-    for(var i = 0, _len = diff.length; i < _len; i++) {
-      var char = diff.charAt(i);
+    do {
+      var char = diff.charAt(pos);
 
       switch(char) {
         case '<':
-          var modChar = diff.charAt(i + 1);
-          var closeTagPos = diff.indexOf('>', i);
-          if(closeTagPos === -1) { throw new Error('No closing tag ">" found near: ' + i); }
+          var modChar = diff.charAt(pos + 1);
+          var closeTagPos = diff.indexOf('>', pos);
+          if(closeTagPos === -1) {
+            throw new Error(diffErrorMessage('No closing tag ">" found', diff, pos));
+          }
 
-          var endOfNodeName = diff.indexOf(' ', i + 1);
+          var endOfNodeName = diff.indexOf(' ', pos + 1);
 
           if(endOfNodeName === -1) {
             endOfNodeName = closeTagPos;
@@ -34,8 +46,7 @@
 
           endOfNodeName = Math.min(endOfNodeName, closeTagPos);
 
-          var name = diff.substring(i + 2, endOfNodeName);
-
+          var name = diff.substring(pos + 2, endOfNodeName);
 
           switch(modChar) {
             case '/': // closing tag
@@ -46,7 +57,7 @@
               if(rootNode === parentNode) { return true; } // done
               node = node.parentNode;
               parentNode = node.parentNode;
-              i = closeTagPos;
+              pos = closeTagPos;
               continue;
             case '-': // remove node then keep going
               var prevNode = node.previousSibling;
@@ -101,19 +112,18 @@
               throw new Error('Missing modification character. Char "' + modChar + '" invalid.');
           }
 
-          i = closeTagPos;
+          pos = closeTagPos;
 
           if(node.nodeType === 1) {
             parentNode = node;
             node = node.firstChild;
-
           }
           // TODO: throw on `null` node
 
           break;
         default: // text node
-          var nextOpenTag = diff.indexOf('<', i);
-          var text = diff.substring(i, nextOpenTag);
+          var nextOpenTag = diff.indexOf('<', pos);
+          var text = diff.substring(pos, nextOpenTag);
 
           if(text !== '[\u2026]') {
             if(!node) {
@@ -130,15 +140,18 @@
             node = node.nextSibling;
           }
 
-          i = nextOpenTag - 1;
+          pos = nextOpenTag - 1;
       }
-    }
+
+      pos++;
+    } while(pos < diffLen);
 
     return node;
   }
 
   function parseAttributes(node, attrsDiff) {
     var changedAttrs = attrsDiff.trim().split(/[ ]+/g);
+    var nodeName = node.nodeName.toLowerCase();
 
     for(var i = changedAttrs.length - 1; i >= 0; i--) {
       var mod = changedAttrs[i].charAt(0);
@@ -152,6 +165,16 @@
         case '+':
           if(parts.length === 1) {
             value = '';
+          } else {
+            var quote = value.charAt(0);
+            if(quote !== '"' && quote !== "'") {
+              throw new Error('Node ' + nodeName + '\'s attribute ' + name + ' not wrapped in double or single quotes.');
+            }
+            if(quote !== value.charAt(value.length - 1)) {
+              throw new Error('Node ' + nodeName + '\'s attribute ' + name + ' quotes not balanced.');
+            }
+
+            value = value.substr(1, value.length - 2);
           }
 
           node.setAttribute(name, value);
