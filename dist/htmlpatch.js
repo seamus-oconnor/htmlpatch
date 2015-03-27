@@ -17,7 +17,13 @@
     return 'HTMLPatch parse error:\n' + snip + '\n' + repeatStr(Math.min(pos, 20)) + '^ ' + msg + ' at char: ' + pos;
   }
 
-  function htmlPatch(rootNode, diff) {
+  function htmlPatch(nodeOrSelector, diff) {
+    var rootNode = nodeOrSelector;
+    if(typeof nodeOrSelector === 'string') {
+      rootNode = document.querySelector(nodeOrSelector);
+      if(!rootNode) { throw new TypeError('No node matches ' + nodeOrSelector); }
+    }
+
     // <?div id="test-1" +data-updated>Goodbye World!</div>
     if(rootNode.nodeType !== 1) { throw new TypeError('First argument must be a HTML element.'); }
     if(typeof diff !== 'string') { throw new TypeError('Second argument must be a string.'); }

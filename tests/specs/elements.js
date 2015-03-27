@@ -25,4 +25,8 @@ describe("Patching Elements", function() {
 
     expect(htmlPatch).withArgs(el, '<=div></banana>').to.throwError();
   });
+
+  it("throws when selector doesn't match", function() {
+    expect(htmlPatch).withArgs('body .does-not-exist', '').to.throwError();
+  });
 });
